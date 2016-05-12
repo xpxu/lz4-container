@@ -1,0 +1,8 @@
+#!/usr/bin/env python
+
+
+try:
+    from lz4container.archive import run
+    run()
+except KeyboardInterrupt:
+    exit(1)
