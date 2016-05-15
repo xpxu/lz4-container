@@ -2,7 +2,7 @@
 
 
 try:
-    from lz4container.archive import run
+    from lz4r.tools import run
     run()
 except KeyboardInterrupt:
     exit(1)
