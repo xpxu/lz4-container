@@ -10,7 +10,7 @@ how to run
 ==========
 Usage: 
 ```
-lz4 [options] [file]
+  lz4 [options] [file]
 ```
 
 Examples:
