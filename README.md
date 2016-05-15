@@ -3,18 +3,25 @@ lz4 container
 
 overview
 ========
-This tool will use lz4 to archive/extract files.
+This tool will use lz4 to compress/decompress files.
 
 
 how to run
 ==========
-Usage: lz4 [options] [file]
+Usage: 
+```
+lz4 [options] [file]
+```
 
 Examples:
 ```
-  lz4 -c archive.lz4r archive  # Create archive.lz4r from archive.
+  lz4 -c dir_name.lz4r dir_name  
   
-  lz4 -x archive.lz4r          # Extract all files from archive.lz4r.
+  lz4 -x dir_name.lz4r          
+  
+  lz4 -c file_name.lz4r file_name
+  
+  lz4 -x file_name.lz4r
 ```
 
 Options:
