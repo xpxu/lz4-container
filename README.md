@@ -30,3 +30,9 @@ Options:
   -x EXTRACTFILE, --extractfile=EXTRACTFILE
                         extract files from an archive
 ```
+
+test
+=====
+```
+  make test
+```
