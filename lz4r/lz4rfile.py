@@ -1,3 +1,4 @@
+#coding=utf-8
 import sys, os
 import tarfile
 from StringIO import StringIO
@@ -6,6 +7,7 @@ import lz4tools
 import lz4f
 
 # remove {"lz4" : "lz4open"} from OPEN_METH due to ReadError Bug in lz4tools
+# open issue in github:　https://github.com/darkdragn/lz4tools/issues/13
 tarfile.TarFile.OPEN_METH = {
     "tar": "taropen",  # uncompressed tar
     "gz": "gzopen",  # gzip compressed tar
@@ -24,6 +26,9 @@ class Lz4rFile():
 
     @classmethod
     def decompress(cls, name, overwrite=False, outname=None, prefs=None):
+        """
+        Be careful with directory which has many files
+        """
         if not outname:
             outname = name.replace('.lz4r', '')
             if outname == name:
@@ -43,8 +48,11 @@ class Lz4rFile():
             writeOut.flush()
         writeOut.close()
 
-        # check whether the uncompressed file is a directory/tar or not
+        # check whether the uncompressed file is a directory/tar or not．
         # untar it if it's a tar
+        # [Note]: if the directory have many files, we can use tar.members = []
+        # with loop to reduce memory usage. However, it will take more time
+        # than use extractall directly.
         if tarfile.is_tarfile(outname):
             outpath = os.getcwd()
             tarname = outname + '.tar'
@@ -57,15 +65,7 @@ class Lz4rFile():
     @classmethod
     def compressFile(cls, name, overwrite=False, outname=None, prefs=None):
         """
-        :type string: name      - name of file to compress
-        :type bool:   overwrite - overwrite destination
-        :type string: outname   - name for compressed file, not required.
-                                  Default will be '.'.join([name, 'lz4r'])
-        Generic compress method for a file. Adds .lz4r to original file name for
-        output, unless outname is provided.
-
-        ***NOTE*** No longer uses compressFrame. This is now large file safe!
-        It will now read the input in 64Kb chunks.
+        This is large file safe. It will now read the input in 64Kb chunks.
         """
         if not outname:
             outname = '.'.join([name, 'lz4r'])
@@ -96,12 +96,7 @@ class Lz4rFile():
     @classmethod
     def compressDir(cls, name, overwrite=None, outname=None, prefs=None):
         """
-        :type string: Name   - the name of the dir to tar
-        :type bool:   overwrite - overwrite destination
-        Generic compress method for creating .tar.lz4 from a dir.
-
-        ***WARNING*** Currently uses StringIO object until lz4file supports write.
-        Avoid using for large directories, it will consume quite a bit of RAM.
+        Be careful with directory which has many files
         """
         if not outname:
             outname = '.'.join([name.rstrip('/'), 'lz4r'])
@@ -111,7 +106,12 @@ class Lz4rFile():
 
         # if the dir is huge and use a buff to hold the dir, the size of buff
         # will become huge, which is unacceptable. So load it into a tar file
-        # firstly, then read this tar file and compress it with lz4
+        # firstly, then read this tar file and compress it with lz4.
+        # Notes:
+        # I guess it's better to use 'tar' command directly here because
+        # tarfile is not good for python 2* when dealing with directory which
+        # have many files. see http://stackoverflow.com/questions/21039974/
+        # high-memory-usage-with-pythons-native-tarfile-lib
         tarname = name + '.tar'
         tar = tarfile.open(tarname, "w")
         tar.add(name)
