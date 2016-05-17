@@ -23,7 +23,10 @@ Examples:
 
 Options:
 ```
-  -h, --help       show this help message and exit
-  -c, --create     create a new archive
-  -x, --extract    extract files from an archive
+Options:
+  -h, --help            show this help message and exit
+  -c CREATEFILE, --createfile=CREATEFILE
+                        create a new archive
+  -x EXTRACTFILE, --extractfile=EXTRACTFILE
+                        extract files from an archive
 ```
